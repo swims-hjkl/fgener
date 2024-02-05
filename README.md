@@ -5,6 +5,10 @@ A rust command line utility to generate n number of files with random characters
 ## Installation
 
 ```bash
+$ cargo install fgener
+```
+
+```bash
 $ cd fgener
 $ cargo build --release
 $ cargo install --path .
