@@ -1,6 +1,6 @@
 [package]
 name = "fgener"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authods = ["Sumedh Rao"]
 description = "A package to generate n number of text files with random characters"
