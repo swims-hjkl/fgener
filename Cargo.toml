@@ -2,9 +2,17 @@
 name = "fgener"
 version = "0.1.0"
 edition = "2021"
+authods = ["Sumedh Rao"]
+description = "A package to generate n number of text files with random characters"
+readme = "README.md"
+repository = "https://github.com/swims-hjkl/fgener"
+keywords = ["randomfiles", "filegenerator", "generator", "random"]
+categories = ["command-line-utilities", "development-tools", "filesystem"]
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 clap = { version = "4.4.18", features = ["derive"] }
 rand = "0.8.5"
+
