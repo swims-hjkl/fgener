@@ -1,37 +1,56 @@
-use core::panic;
+use clap::Parser;
 use rand::rngs::ThreadRng;
 use rand::Rng;
-use std::env;
 use std::fs;
 use std::path::PathBuf;
 
-fn main() {
-    let args: Vec<String> = env::args().collect();
-    let output_path: &String = &args[1];
-    let number_of_files: i32 = match args[2].parse::<i32>() {
-        Ok(val) => val,
-        Err(_) => panic!("Second argument has to be number of files"),
-    };
-    let mut rng = rand::thread_rng();
-    let mut count = 1;
-    while count <= number_of_files {
-        let mut file_output_path = PathBuf::from(output_path.clone());
-        file_output_path.push(format!("{}.txt", count));
-        let random_string = generate_random_string(&mut rng);
-        match fs::write(file_output_path, random_string) {
-            Ok(_) => println!("Successfully created {}.txt", count),
-            Err(err) => panic!("{err}"),
-        }
-        count += 1;
-    }
+#[derive(Parser, Debug)]
+#[command(author, version, about = None)]
+pub struct InputData {
+    /// The output folder where files are generated
+    #[arg(index = 1)]
+    pub output_path: String,
+    /// Number of files to be generated
+    #[arg(index = 2)]
+    pub number_of_files: u32,
+    /// least number of characters in a file (Optional)
+    #[arg(short, long, default_value_t = 100)]
+    pub lowest_number_of_chars: u32,
+    /// highest number of characters in a file (Optional)
+    #[arg(short, default_value_t = 2_621_440)]
+    pub highest_number_of_chars: u32,
 }
 
-fn generate_random_string(rng: &mut ThreadRng) -> String {
-    let limit: u32 = 2621440;
-    let start: u32 = 100;
+fn main() -> Result<(), String> {
+    let input_data = InputData::parse();
+    let mut rng = rand::thread_rng();
+    for count in 1..=input_data.number_of_files {
+        let mut file_output_path = PathBuf::from(&input_data.output_path);
+        file_output_path.push(format!("{}.txt", count));
+        let random_string = generate_random_string(
+            &mut rng,
+            input_data.lowest_number_of_chars,
+            input_data.highest_number_of_chars,
+        );
+        fs::write(&file_output_path, random_string).map_err(|err| {
+            format!(
+                "Error writing to file {}: {}",
+                file_output_path.display(),
+                err
+            )
+        })?;
+    }
+    Ok(())
+}
+
+fn generate_random_string(
+    rng: &mut ThreadRng,
+    min_number_of_chars: u32,
+    max_number_of_chars: u32,
+) -> String {
     let mut output = String::new();
     let mut count: u32 = 0;
-    let random_range: u32 = rng.gen_range(start..=limit);
+    let random_range: u32 = rng.gen_range(min_number_of_chars..=max_number_of_chars);
     while count < random_range {
         output.push(generate_random_character(rng));
         count += 1;
